@@ -50,7 +50,8 @@ class WasmSSAEmulatorEngine(EmulatorEngine):
     def emulate_functions(self, list_functions_name=None, state=WasmVMstate(), depth=0):
 
         if list_functions_name:
-            if set(list_functions_name).issubset([x.name for x in self.cfg.functions]):  # function_name not in [x.name for x in self.functions]:
+            # fix the bug in onlyfunc mode, added "not"
+            if not set(list_functions_name).issubset([x.name for x in self.cfg.functions]):  # function_name not in [x.name for x in self.functions]:
                 raise Exception('Some function_name given not in this module - available: %s', self.ana.func_prototypes)
         else:
             list_functions_name = [x.name for x in self.cfg.functions]
@@ -333,7 +334,13 @@ class WasmSSAEmulatorEngine(EmulatorEngine):
             # TODO branch br_table
             logging.warning('SSA: branch br_table not yet supported')
         elif instr.name == 'return':
-            arg = [state.ssa_stack.pop()]
+            # arg = [state.ssa_stack.pop()]
+            # fix return bug
+            # TODO: possible problem: if no value in stack, return void
+            if len(state.ssa_stack) > 0:
+                arg = [state.ssa_stack.pop()]
+            else:
+                arg = None
             instr.ssa = SSA(method_name=instr.name, args=arg)
             halt = True
         elif instr.name == 'call':
@@ -391,28 +398,40 @@ class WasmSSAEmulatorEngine(EmulatorEngine):
 
     def emul_variable_instr(self, instr, state):
         if instr.name in ['get_local', 'get_global']:
-            instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name)
+            # instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name)
+            # print the variable index
+            instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.operand_interpretation)
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
         elif instr.name in ['set_local', 'set_global']:
-            state.ssa_stack.pop()
-            instr.ssa = SSA(method_name=instr.name)
+            # state.ssa_stack.pop()
+            # print the parameter
+            arg = state.ssa_stack.pop()
+            # instr.ssa = SSA(method_name=instr.name)
+            # print the variable index
+            instr.ssa = SSA(method_name=instr.operand_interpretation, args=[arg])
         elif instr.name == 'tee_local':
             state.ssa_stack.append(state.ssa_stack[-1])
             self.ssa_counter += 1
+            # enable SSA for tee
+            instr.ssa = SSA(method_name=instr.operand_interpretation, args=[state.ssa_stack[-1]])
         return False
 
     def emul_memory_instr(self, instr, state):
         # load
         if 'load' in instr.name:
             arg = [state.ssa_stack.pop()]
-            instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=arg)
+            # instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=arg)
+            # print the offset
+            instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.operand_interpretation, args=arg)
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
 
         elif 'store' in instr.name:
             arg = [state.ssa_stack.pop(), state.ssa_stack.pop()]
-            instr.ssa = SSA(method_name=instr.name, args=arg)
+            # instr.ssa = SSA(method_name=instr.name, args=arg)
+            # print the offset
+            instr.ssa = SSA(method_name=instr.operand_interpretation, args=arg)
 
         elif instr.name == 'current_memory':
             instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name)

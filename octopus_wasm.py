@@ -125,7 +125,15 @@ def main() -> None:
             emul.emulate_functions()
 
         # visualization of the cfg with SSA
-        emul.cfg.visualize(ssa=True)
+        # emul.cfg.visualize(ssa=True)
+
+        octo_graph = CFGGraph(emul.cfg)
+        if args.functions or args.onlyfunc:
+            octo_graph.view_functions(only_func_name=args.onlyfunc,
+                                          simplify=args.simplify,
+                                          ssa=args.ssa)
+        else:
+            octo_graph.view(simplify=args.simplify, ssa=args.ssa)
 
     if not args.disassemble and not args.ssa \
             and not args.cfg and not args.call\
