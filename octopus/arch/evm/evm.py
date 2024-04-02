@@ -26,6 +26,9 @@ _table = {
     0x18: ('XOR', 0, 2, 1, 3, 'Bitwise XOR operation.'),
     0x19: ('NOT', 0, 1, 1, 3, 'Bitwise NOT operation.'),
     0x1a: ('BYTE', 0, 2, 1, 3, 'Retrieve single byte from word.'),
+    0x1b: ('SHL', 0, 2, 1, 3, 'Left shift operation'), # new
+    0x1c: ('SHR', 0, 2, 1, 3, 'Logical right shift operation'), # new
+    0x1d: ('SAR', 0, 2, 1, 3, 'Arithmetic (signed) right shift operation'), # new
     0x20: ('SHA3', 0, 2, 1, 30, 'Compute Keccak-256 hash.'),  # SHA3
     0x30: ('ADDRESS', 0, 0, 1, 2, 'Get address of currently executing account.'),
     0x31: ('BALANCE', 0, 1, 1, 20, 'Get balance of the given account.'),
@@ -42,12 +45,18 @@ _table = {
     0x3c: ('EXTCODECOPY', 0, 4, 0, 20, "Copy an account's code to memory."),
     0x3d: ('RETURNDATASIZE', 0, 0, 1, 2, "get size of return data buffer"),
     0x3e: ('RETURNDATACOPY', 0, 3, 0, 3, "copy return data in current environment to memory"),
+    0x3f: ('EXTCODEHASH', 0, 1, 1, 100, "Get hash of an account's code"), # new
     0x40: ('BLOCKHASH', 0, 1, 1, 20, 'Get the hash of one of the 256 most recent complete blocks.'),
     0x41: ('COINBASE', 0, 0, 1, 2, "Get the block's beneficiary address."),
     0x42: ('TIMESTAMP', 0, 0, 1, 2, "Get the block's timestamp."),
     0x43: ('NUMBER', 0, 0, 1, 2, "Get the block's number."),
     0x44: ('DIFFICULTY', 0, 0, 1, 2, "Get the block's difficulty."),
     0x45: ('GASLIMIT', 0, 0, 1, 2, "Get the block's gas limit."),
+    0x46: ('CHAINID', 0, 0, 1, 2, "Get the chain ID"), # new
+    0x47: ('SELFBALANCE', 0, 0, 1, 5, "Get balance of currently executing account"), # new
+    0x48: ('BASEFEE', 0, 0, 1, 2, "Get the base fee"), # new
+    0x49: ('BLOBHASH', 0, 1, 1, 3, "Get versioned hashes"), # new
+    0x4a: ('BLOBBASEFEE', 0, 0, 1, 2, "Returns the value of the blob base-fee of the current block"), # new
     0x50: ('POP', 0, 1, 0, 2, 'Remove item from stack.'),
     0x51: ('MLOAD', 0, 1, 1, 3, 'Load word from memory.'),
     0x52: ('MSTORE', 0, 2, 0, 3, 'Save word to memory.'),
@@ -56,42 +65,46 @@ _table = {
     0x55: ('SSTORE', 0, 2, 0, 0, 'Save word to storage.'),
     0x56: ('JUMP', 0, 1, 0, 8, 'Alter the program counter.'),
     0x57: ('JUMPI', 0, 2, 0, 10, 'Conditionally alter the program counter.'),
-    0x58: ('GETPC', 0, 0, 1, 2, 'Get the value of the program counter prior to the increment.'),
+    0x58: ('PC', 0, 0, 1, 2, 'Get the value of the program counter prior to the increment.'), # update name to match emulator.py
     0x59: ('MSIZE', 0, 0, 1, 2, 'Get the size of active memory in bytes.'),
     0x5a: ('GAS', 0, 0, 1, 2, 'Get the amount of available gas, including the corresponding reduction the amount of available gas.'),
     0x5b: ('JUMPDEST', 0, 0, 0, 1, 'Mark a valid destination for jumps.'),
-    0x60: ('PUSH1', 1, 0, 1, 0, 'Place 1 byte item on stack.'),
-    0x61: ('PUSH2', 2, 0, 1, 0, 'Place 2-byte item on stack.'),
-    0x62: ('PUSH3', 3, 0, 1, 0, 'Place 3-byte item on stack.'),
-    0x63: ('PUSH4', 4, 0, 1, 0, 'Place 4-byte item on stack.'),
-    0x64: ('PUSH5', 5, 0, 1, 0, 'Place 5-byte item on stack.'),
-    0x65: ('PUSH6', 6, 0, 1, 0, 'Place 6-byte item on stack.'),
-    0x66: ('PUSH7', 7, 0, 1, 0, 'Place 7-byte item on stack.'),
-    0x67: ('PUSH8', 8, 0, 1, 0, 'Place 8-byte item on stack.'),
-    0x68: ('PUSH9', 9, 0, 1, 0, 'Place 9-byte item on stack.'),
-    0x69: ('PUSH10', 10, 0, 1, 0, 'Place 10-byte item on stack.'),
-    0x6a: ('PUSH11', 11, 0, 1, 0, 'Place 11-byte item on stack.'),
-    0x6b: ('PUSH12', 12, 0, 1, 0, 'Place 12-byte item on stack.'),
-    0x6c: ('PUSH13', 13, 0, 1, 0, 'Place 13-byte item on stack.'),
-    0x6d: ('PUSH14', 14, 0, 1, 0, 'Place 14-byte item on stack.'),
-    0x6e: ('PUSH15', 15, 0, 1, 0, 'Place 15-byte item on stack.'),
-    0x6f: ('PUSH16', 16, 0, 1, 0, 'Place 16-byte item on stack.'),
-    0x70: ('PUSH17', 17, 0, 1, 0, 'Place 17-byte item on stack.'),
-    0x71: ('PUSH18', 18, 0, 1, 0, 'Place 18-byte item on stack.'),
-    0x72: ('PUSH19', 19, 0, 1, 0, 'Place 19-byte item on stack.'),
-    0x73: ('PUSH20', 20, 0, 1, 0, 'Place 20-byte item on stack.'),
-    0x74: ('PUSH21', 21, 0, 1, 0, 'Place 21-byte item on stack.'),
-    0x75: ('PUSH22', 22, 0, 1, 0, 'Place 22-byte item on stack.'),
-    0x76: ('PUSH23', 23, 0, 1, 0, 'Place 23-byte item on stack.'),
-    0x77: ('PUSH24', 24, 0, 1, 0, 'Place 24-byte item on stack.'),
-    0x78: ('PUSH25', 25, 0, 1, 0, 'Place 25-byte item on stack.'),
-    0x79: ('PUSH26', 26, 0, 1, 0, 'Place 26-byte item on stack.'),
-    0x7a: ('PUSH27', 27, 0, 1, 0, 'Place 27-byte item on stack.'),
-    0x7b: ('PUSH28', 28, 0, 1, 0, 'Place 28-byte item on stack.'),
-    0x7c: ('PUSH29', 29, 0, 1, 0, 'Place 29-byte item on stack.'),
-    0x7d: ('PUSH30', 30, 0, 1, 0, 'Place 30-byte item on stack.'),
-    0x7e: ('PUSH31', 31, 0, 1, 0, 'Place 31-byte item on stack.'),
-    0x7f: ('PUSH32', 32, 0, 1, 0, 'Place 32-byte (full word) item on stack.'),
+    0x5c: ('TLOAD', 0, 1, 1, 100, 'Load word from transient storage'), # new
+    0x5d: ('TSTORE', 0, 2, 0, 100, 'Save word to transient storage'), # new
+    0x5e: ('MCOPY', 0, 3, 0, 3, 'Copy memory areas'), # new
+    0x5f: ('PUSH0', 0, 0, 1, 2, 'Place value 0 on stack'), # new
+    0x60: ('PUSH1', 1, 0, 1, 3, 'Place 1 byte item on stack.'), # update gas
+    0x61: ('PUSH2', 2, 0, 1, 3, 'Place 2-byte item on stack.'), # update gas
+    0x62: ('PUSH3', 3, 0, 1, 3, 'Place 3-byte item on stack.'), # update gas
+    0x63: ('PUSH4', 4, 0, 1, 3, 'Place 4-byte item on stack.'), # update gas
+    0x64: ('PUSH5', 5, 0, 1, 3, 'Place 5-byte item on stack.'), # update gas
+    0x65: ('PUSH6', 6, 0, 1, 3, 'Place 6-byte item on stack.'), # update gas
+    0x66: ('PUSH7', 7, 0, 1, 3, 'Place 7-byte item on stack.'), # update gas
+    0x67: ('PUSH8', 8, 0, 1, 3, 'Place 8-byte item on stack.'), # update gas
+    0x68: ('PUSH9', 9, 0, 1, 3, 'Place 9-byte item on stack.'), # update gas
+    0x69: ('PUSH10', 10, 0, 1, 3, 'Place 10-byte item on stack.'), # update gas
+    0x6a: ('PUSH11', 11, 0, 1, 3, 'Place 11-byte item on stack.'), # update gas
+    0x6b: ('PUSH12', 12, 0, 1, 3, 'Place 12-byte item on stack.'), # update gas
+    0x6c: ('PUSH13', 13, 0, 1, 3, 'Place 13-byte item on stack.'), # update gas
+    0x6d: ('PUSH14', 14, 0, 1, 3, 'Place 14-byte item on stack.'), # update gas
+    0x6e: ('PUSH15', 15, 0, 1, 3, 'Place 15-byte item on stack.'), # update gas
+    0x6f: ('PUSH16', 16, 0, 1, 3, 'Place 16-byte item on stack.'), # update gas
+    0x70: ('PUSH17', 17, 0, 1, 3, 'Place 17-byte item on stack.'), # update gas
+    0x71: ('PUSH18', 18, 0, 1, 3, 'Place 18-byte item on stack.'), # update gas
+    0x72: ('PUSH19', 19, 0, 1, 3, 'Place 19-byte item on stack.'), # update gas
+    0x73: ('PUSH20', 20, 0, 1, 3, 'Place 20-byte item on stack.'), # update gas
+    0x74: ('PUSH21', 21, 0, 1, 3, 'Place 21-byte item on stack.'), # update gas
+    0x75: ('PUSH22', 22, 0, 1, 3, 'Place 22-byte item on stack.'), # update gas
+    0x76: ('PUSH23', 23, 0, 1, 3, 'Place 23-byte item on stack.'), # update gas
+    0x77: ('PUSH24', 24, 0, 1, 3, 'Place 24-byte item on stack.'), # update gas
+    0x78: ('PUSH25', 25, 0, 1, 3, 'Place 25-byte item on stack.'), # update gas
+    0x79: ('PUSH26', 26, 0, 1, 3, 'Place 26-byte item on stack.'), # update gas
+    0x7a: ('PUSH27', 27, 0, 1, 3, 'Place 27-byte item on stack.'), # update gas
+    0x7b: ('PUSH28', 28, 0, 1, 3, 'Place 28-byte item on stack.'), # update gas
+    0x7c: ('PUSH29', 29, 0, 1, 3, 'Place 29-byte item on stack.'), # update gas
+    0x7d: ('PUSH30', 30, 0, 1, 3, 'Place 30-byte item on stack.'), # update gas
+    0x7e: ('PUSH31', 31, 0, 1, 3, 'Place 31-byte item on stack.'), # update gas
+    0x7f: ('PUSH32', 32, 0, 1, 3, 'Place 32-byte (full word) item on stack.'), # update gas
     0x80: ('DUP1', 0, 1, 2, 3, 'Duplicate 1st stack item.'),
     0x81: ('DUP2', 0, 2, 3, 3, 'Duplicate 2nd stack item.'),
     0x82: ('DUP3', 0, 3, 4, 3, 'Duplicate 3rd stack item.'),
@@ -134,6 +147,7 @@ _table = {
     0xf2: ('CALLCODE', 0, 7, 1, 40, "Message-call into this account with alternative account's code."),
     0xf3: ('RETURN', 0, 2, 0, 0, 'Halt execution returning output data.'),
     0xf4: ('DELEGATECALL', 0, 6, 1, 40, "like CALLCODE but keeps caller's value and sender"),
+    0xf5: ('CREATE2', 0, 4, 1, 32000, 'Create a new account with associated code at a predictable address'), # new
     0xfa: ('STATICCALL', 0, 6, 1, 40, 'like CALL but disallow state modifications'),
     0xfb: ('CREATE2', 0, 4, 1, 32000, 'create new account with associated code at address `sha3(sender + salt + sha3(init code)) % 2**160`'),
     0xfd: ('REVERT', 0, 2, 0, 0, 'halt execution, revert state and return output data'),

@@ -251,7 +251,8 @@ class EvmEmulatorEngine(EmulatorEngine):
     def emul_comparaison_logic_instruction(self, instr, state):
 
         if instr.name in ['LT', 'GT', 'SLT', 'SGT',
-                          'EQ', 'AND', 'OR', 'XOR', 'BYTE']:
+                          'EQ', 'AND', 'OR', 'XOR', 'BYTE',
+                          'SHL', 'SHR', 'SAR']: # new
             args = [state.ssa_stack.pop(), state.ssa_stack.pop()]
         elif instr.name in ['ISZERO', 'NOT']:
             args = [state.ssa_stack.pop()]
@@ -291,7 +292,8 @@ class EvmEmulatorEngine(EmulatorEngine):
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
 
-        elif instr.name in ['CALLDATACOPY', 'CODECOPY', 'RETURNDATACOPY']:
+        elif instr.name in ['CALLDATACOPY', 'CODECOPY', 'RETURNDATACOPY', 
+                            'MCOPY']: # new
             op0, op1, op2 = state.ssa_stack.pop(), state.ssa_stack.pop(), state.ssa_stack.pop()
             # SSA STACK
             instr.ssa = SSA(method_name=instr.name, args=[op0, op1, op2])
@@ -306,14 +308,16 @@ class EvmEmulatorEngine(EmulatorEngine):
 
     def ssa_block_instruction(self, instr, state):
 
-        if instr.name == 'BLOCKHASH':
+        if instr.name in ['BLOCKHASH',
+                          'EXTCODEHASH', 'BLOBHASH']:  # new
             # SSA STACK
             blocknumber = state.ssa_stack.pop()
             instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=[blocknumber])
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
 
-        elif instr.name in ['COINBASE', 'TIMESTAMP', 'NUMBER', 'DIFFICULTY', 'GASLIMIT']:
+        elif instr.name in ['COINBASE', 'TIMESTAMP', 'NUMBER', 'DIFFICULTY', 'GASLIMIT',
+                            'CHAINID', 'SELFBALANCE', 'BASEFEE', 'BLOBBASEFEE']:  # new
             instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name)
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
@@ -328,14 +332,16 @@ class EvmEmulatorEngine(EmulatorEngine):
             s0 = state.ssa_stack.pop()
             instr.ssa = SSA(method_name=instr.name)
 
-        elif op in ['MLOAD', 'SLOAD']:
+        elif op in ['MLOAD', 'SLOAD', 
+                    'TLOAD']:  # new
             # SSA STACK
             s0 = state.ssa_stack.pop()
             instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=[s0])
             state.ssa_stack.append(instr)
             self.ssa_counter += 1
 
-        elif op in ['MSTORE', 'MSTORE8', 'SSTORE']:
+        elif op in ['MSTORE', 'MSTORE8', 'SSTORE', 
+                    'TSTORE']:  # new
             # SSA STACK
             s0, s1 = state.ssa_stack.pop(), state.ssa_stack.pop()
             instr.ssa = SSA(method_name=instr.name, args=[s0, s1])
@@ -457,6 +463,12 @@ class EvmEmulatorEngine(EmulatorEngine):
 
         if instr.name == 'CREATE':
             args = [state.ssa_stack.pop(), state.ssa_stack.pop(), state.ssa_stack.pop()]
+            instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=args)
+            state.ssa_stack.append(instr)
+            self.ssa_counter += 1
+
+        elif instr.name == 'CREATE2': # new
+            args = [state.ssa_stack.pop(), state.ssa_stack.pop(), state.ssa_stack.pop(), state.ssa_stack.pop()]
             instr.ssa = SSA(new_assignement=self.ssa_counter, method_name=instr.name, args=args)
             state.ssa_stack.append(instr)
             self.ssa_counter += 1

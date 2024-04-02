@@ -21,6 +21,8 @@ class EvmInstruction(Instruction):
 
     @property
     def group(self):
+        if self.opcode == 0x5f: # new: handle PUSH0
+            return 'Push Operations'
         '''Instruction classification as per the yellow paper'''
         classes = {0: 'Stop and Arithmetic Operations',
                    1: 'Comparison & Bitwise Logic Operations',
