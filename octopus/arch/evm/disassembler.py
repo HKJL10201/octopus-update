@@ -64,7 +64,8 @@ class EvmDisassembler(Disassembler):
         opcode = int.from_bytes(wallet.read(1), byteorder='big')
 
         # default value
-        invalid = ('INVALID', 0, 0, 0, 0, 'Unknown opcode')
+        # invalid = ('INVALID', 0, 0, 0, 0, 'Unknown opcode')
+        invalid = ('INVALID%x'%opcode, 0, 0, 0, 0, 'Unknown opcode')
         name, operand_size, pops, pushes, gas, description = \
             self.asm.table.get(opcode, invalid)
         instruction = EvmInstruction(opcode, name, operand_size, pops, pushes,
