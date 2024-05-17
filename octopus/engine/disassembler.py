@@ -61,6 +61,12 @@ class Disassembler(object):
             return '\n'.join(map(str, self.instructions))
         elif r_format == 'reverse':
             return self.reverse_instructions
+        elif r_format == 'full':
+            # NEW: return offset and instructions
+            return '\n'.join(['{:x}: {}'.format(i.offset,i) for i in self.instructions])
+        else: 
+            # NEW: default: return text
+            '\n'.join(map(str, self.instructions))
 
     def disassemble_contract(self, contract):
         """ Generic method to disassemble a Contract """

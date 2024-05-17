@@ -65,7 +65,8 @@ class EvmDisassembler(Disassembler):
 
         # default value
         # invalid = ('INVALID', 0, 0, 0, 0, 'Unknown opcode')
-        invalid = ('INVALID%x'%opcode, 0, 0, 0, 0, 'Unknown opcode')
+        # NEW: enable printing the invalid ID
+        invalid = ('INVALID:%x'%opcode, 0, 0, 0, 0, 'Unknown opcode')
         name, operand_size, pops, pushes, gas, description = \
             self.asm.table.get(opcode, invalid)
         instruction = EvmInstruction(opcode, name, operand_size, pops, pushes,

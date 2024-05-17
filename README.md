@@ -75,3 +75,12 @@ New opcodes are marked in **bold**:
 | 5f   | PUSH0       | 0    | 1    | 2    | Place value 0 on stack                                       |
 | f5   | CREATE2     | 4    | 1    | 3200 | Create a new account with associated code at a predictable address |
 
+### New Features
+
+1. Added `assembler.py`, converting opcode string to binary. (WIP)
+
+2. Enable printing the invalid IDs for disassembling.
+
+3. Added option `-fl` or `--flag`. Use `-fl full` with `-d` to print the offset of instructions for disassembling. 
+
+   Example: `python3 octopus_eth_evm.py -f <filename> -d -fl full`.

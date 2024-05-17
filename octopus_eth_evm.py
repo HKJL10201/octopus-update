@@ -31,6 +31,10 @@ def main() -> None:
     inputs.add_argument('-a', '--address',
                         help='pull contract from the blockchain',
                         metavar='CONTRACT_ADDRESS')
+    # NEW: add optional flag
+    inputs.add_argument('-fl', '--flag',
+                        help='optional flag',
+                        metavar='FLAG')
 
     features = parser.add_argument_group('Features')
     features.add_argument('-e', '--explore',
@@ -151,7 +155,9 @@ def main() -> None:
 
         # TODO add other r_format support
         octo_disasm = EthereumDisassembler()
-        print(octo_disasm.disassemble(octo_bytecode, r_format='text'))
+        # NEW: added other r_format support using flag
+        r_format = args.flag if args.flag else 'text'
+        print(octo_disasm.disassemble(octo_bytecode, r_format = r_format))
 
     # Control Flow Analysis
     if args.cfg or args.ssa:
