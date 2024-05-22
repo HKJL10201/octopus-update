@@ -26,8 +26,11 @@ def main(filename):
         opcode = filter(opcode)
         details = table.get(opcode)
         if details is None:
+            # opcpde not in table
             if '0x' in opcode:
-                res += opcode.replace('0x', '')
+                # if the unknown opcode starts with 0x
+                op = opcode.replace('0x', '')
+                res += f"{op:0>2}"
                 offset += 1
                 continue
             else:
