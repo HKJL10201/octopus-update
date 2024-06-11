@@ -11,6 +11,8 @@ def init(filename):
 def filter(opcode):
     if opcode == 'KECCAK256':
         return 'SHA3'
+    elif opcode == 'PREVRANDAO':
+        return 'DIFFICULTY'
     else:
         return opcode
 
@@ -26,7 +28,7 @@ def main(filename):
         opcode = filter(opcode)
         details = table.get(opcode)
         if details is None:
-            # opcpde not in table
+            # opcode not in table
             if '0x' in opcode:
                 # if the unknown opcode starts with 0x
                 op = opcode.replace('0x', '')
@@ -34,7 +36,7 @@ def main(filename):
                 offset += 1
                 continue
             else:
-                print(opcode)
+                print('Unknown opcode:', opcode)
                 return
         op = details[0]
         res += f"{op:02x}"
